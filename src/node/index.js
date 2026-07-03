@@ -30,6 +30,17 @@ app.get("/customers", async (req, res) => {
   }
 });
 
+app.get('/customers/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const customerData = await pool.query(
+    'SELECT * FROM customers WHERE customer_id = $1',
+    [id]
+  );
+
+  res.send(customerData.rows[0]);
+});
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -37,7 +48,7 @@ app.post("/add-customer", async (req, res) => {
   try {
     const { companyName, industry, contact, location } = req.body;
     const newCustomer = await pool.query(
-      "INSERT INTO customers (company_nam, industry, contact, location) VALUES ($1, $2, $3, $4) RETURNING *",
+      "INSERT INTO customers (company_name, industry, contact, location) VALUES ($1, $2, $3, $4) RETURNING *",
       [companyName, industry, contact, location]
     );
     res.json({ success: true, customer: newCustomer.rows[0] });

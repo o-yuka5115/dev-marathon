@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>顧客情報詳細</title>
+</head>
+<body>
+  <div>
+    <h1>顧客情報詳細</h1>
+    <p>ID : <span id="customer_id"></span></p>
+    <p>会社名 : <span id="company_name"></span></p>
+    <p>業種 : <span id="industry"></span></p>
+    <p>連絡先 : <span id="contact"></span></p>
+    <p>所在地 : <span id="location"></span></p>
+  </div>
+
+  <script type="module">
+    import config from '../config.js'
+
+    const params = new URLSearchParams(window.location.search);
+    const customerId = params.get('id');
+
+    fetch(`${config.apiUrl}/customers/${customerId}`)
+      .then(response => response.json())
+      .then(customer => {
+        document.getElementById('customer_id').textContent = customer.customer_id;
+        document.getElementById('company_name').textContent = customer.company_name;
+        document.getElementById('industry').textContent = customer.industry;
+        document.getElementById('contact').textContent = customer.contact;
+        document.getElementById('location').textContent = customer.location;
+      });
+
+
+
+  </script>
+
+</body>
+</html>

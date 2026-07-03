@@ -10,9 +10,53 @@
 <body>
     <div class="container mt-5">
         <!-- ここにHTMLを書く -->
+        <p>会社名: <span id="companyName"></span></p>
+        <p>業種: <span id="industry"></span></p>
+        <p>連絡先: <span id="contact"></span></p>
+        <p>所在地: <span id="location"></span></p>
+        <button type="button" id="submit-button">登録</button>
+        <button type="button" id="back-button">戻る</button>
     </div>
     <script type="module">
-        <!-- ここにJSを書く -->
+        //ここにJSを書く
+        import config from '../config.js';
+        //データを取り出す
+        const savedData = sessionStorage.getItem('customerAddForm');
+        const customer = JSON.parse(savedData);
+        document.getElementById('companyName').textContent = customer.companyName;
+        document.getElementById('industry').textContent = customer.industry;
+        document.getElementById('contact').textContent = customer.contact;
+        document.getElementById('location').textContent = customer.location;
+
+        //APIへ送信
+        document.getElementById('submit-button').addEventListener('click', function () {
+            fetch(config.apiUrl + '/add-customer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(customer)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    //成功時の流れ
+                    if (data.success) {
+                        alert('顧客情報が正常に保存されました。');
+                        sessionStorage.removeItem('customerAddForm');
+                        window.location.href = 'list.html';
+                    } else {
+                        alert('保存に失敗しました。');
+                    }
+                })
+
+        });
+
+        //戻るボタン
+        document.getElementById('back-button').addEventListener('click', function () {
+            window.location.href = 'add.html';
+        });
+
+
     </script>
     <!-- BootstrapのJavaScriptの読み込み -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
