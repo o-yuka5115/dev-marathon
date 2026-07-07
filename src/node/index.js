@@ -59,3 +59,36 @@ app.post("/add-customer", async (req, res) => {
 });
 
 app.use(express.static("public"));
+
+app.delete("/customers/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query(
+      "DELETE FROM customers WHERE customer_id = $1,",
+      [id]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err)
+    res.json({ success: false });
+  }
+});
+
+app.put("/customers/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { companyName, industry, contact, location } = req.body;
+
+    await pool.query(
+      "UPDATE customers SET company_name = $1, industry = $2, contact = $3, location = $4 WHERE customer_id = $5",
+      [companyName, industry, contact, location, id]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false });
+  }
+});

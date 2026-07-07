@@ -10,9 +10,73 @@
 <body>
     <div class="container mt-5">
         <!-- ここにHTMLを書く -->
+        <h1>顧客情報編集</h1>
+
+        <form id="customer-form">
+            <div>
+                <label for="companyName">会社名</label>
+                <input type="text" id="companyName" name="companyName">
+            </div>
+
+            <div>
+                <label for="industry">業種</label>
+                <input type="text" id="industry" name="industry">
+            </div>
+
+            <div>
+                <label for="contact">連絡先</label>
+                <input type="text" id="contact" name="contact">
+            </div>
+
+            <div>
+                <label for="location">所在地</label>
+                <input type="text" id="location" name="location">
+            </div>
+
+            <button type="submit">更新</button>
+        </form>
     </div>
     <script type="module">
-        <!-- ここにJSを書く -->
+        // <!-- ここにJSを書く -->
+        import config from '../config.js'
+        const params = new URLSearchParams(window.location.search);
+        const customerId = params.get('id');
+
+        fetch(`${config.apiUrl}/customers/${customerId}`)
+            .then(response => response.json())
+            .then(customer => {
+                document.getElementById('companyName').value = customer.company_name;
+                document.getElementById('industry').value = customer.industry;
+                document.getElementById('contact').value = customer.contact;
+                document.getElementById('location').value = customer.location;
+
+            });
+
+        document.getElementById('customer-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const customer = Object.fromEntries(formData.entries());
+
+            fetch(`${config.apiUrl}/customers/${customerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(customer)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('顧客情報を更新しました。');
+                        window.location.href = `detail.html?id=${customerId}`;
+                    } else {
+                        alert('更新に失敗しました。');
+                    }
+                });
+        });
+
+
     </script>
     <!-- BootstrapのJavaScriptの読み込み -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
